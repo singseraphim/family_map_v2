@@ -1,0 +1,49 @@
+CREATE TABLE `Users` (
+	`Username`	TEXT NOT NULL UNIQUE,
+	`Password`	TEXT NOT NULL,
+	`Email`	TEXT NOT NULL,
+	`FirstName`	TEXT NOT NULL,
+	`LastName`	TEXT NOT NULL,
+	`Gender`	TEXT NOT NULL,
+	`PersonID`	TEXT NOT NULL UNIQUE,
+	FOREIGN KEY(`FirstName`) REFERENCES `Persons`(`FirstName`),
+	FOREIGN KEY(`Gender`) REFERENCES `Persons`(`Gender`),
+	FOREIGN KEY(`PersonID`) REFERENCES `Persons`(`PersonID`),
+	FOREIGN KEY(`LastName`) REFERENCES `Persons`(`LastName`),
+	PRIMARY KEY(`Username`)
+);
+
+CREATE TABLE `Persons` (
+	`PersonID`	TEXT NOT NULL UNIQUE,
+	`Descendant`	TEXT NOT NULL,
+	`FirstName`	TEXT NOT NULL,
+	`LastName`	TEXT NOT NULL,
+	`Gender`	TEXT NOT NULL CHECK(Gender = "f" OR Gender = "m"),
+	`Father`	TEXT,
+	`Mother`	TEXT,
+	`Spouse`	TEXT,
+	PRIMARY KEY(`PersonID`),
+	FOREIGN KEY(`Descendant`) REFERENCES `Users`(`Username`)
+);
+
+CREATE TABLE `Events` (
+	`EventID`	TEXT NOT NULL UNIQUE,
+	`Descendant`	TEXT NOT NULL,
+	`Person`	TEXT NOT NULL,
+	`Latitude`	REAL,
+	`Longitude`	REAL,
+	`Country`	TEXT,
+	`City`	TEXT,
+	`EventType`	TEXT,
+	`Year`	INTEGER,
+	FOREIGN KEY(`Person`) REFERENCES `Persons`(`PersonID`),
+	FOREIGN KEY(`Descendant`) REFERENCES `Users`(`Username`),
+	PRIMARY KEY(`EventID`)
+);
+
+CREATE TABLE `AuthTokens` (
+	`UserName`	TEXT NOT NULL,
+	`AuthToken`	TEXT NOT NULL,
+	FOREIGN KEY(`UserName`) REFERENCES `Users`(`Username`),
+	PRIMARY KEY(`AuthToken`)
+);
