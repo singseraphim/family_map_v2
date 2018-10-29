@@ -29,14 +29,14 @@ CREATE TABLE `Persons` (
 CREATE TABLE `Events` (
 	`EventID`	TEXT NOT NULL UNIQUE,
 	`Descendant`	TEXT NOT NULL,
-	`Person`	TEXT NOT NULL,
+	`Server.Services.Person`	TEXT NOT NULL,
 	`Latitude`	REAL,
 	`Longitude`	REAL,
 	`Country`	TEXT,
 	`City`	TEXT,
 	`EventType`	TEXT,
 	`Year`	INTEGER,
-	FOREIGN KEY(`Person`) REFERENCES `Persons`(`PersonID`),
+	FOREIGN KEY(`Server.Services.Person`) REFERENCES `Persons`(`PersonID`),
 	FOREIGN KEY(`Descendant`) REFERENCES `Users`(`Username`),
 	PRIMARY KEY(`EventID`)
 );
