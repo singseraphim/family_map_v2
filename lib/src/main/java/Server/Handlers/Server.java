@@ -22,14 +22,15 @@ public class Server {
         server.setExecutor(null);
         System.out.println("Creating contexts");
         server.createContext("/user/register", new RegisterHandler()); //may need to make more handlers for events and persons
-        server.createContext(" /user/login", new LoginHandler());
+        server.createContext("/user/login", new LoginHandler());
         server.createContext("/clear", new ClearHandler());
-        server.createContext("/fill/[username]/{generations}", new FillHandler());
+        server.createContext("/fill", new FillHandler());
         server.createContext("/load", new LoadHandler());
-        server.createContext("/person/[personID]", new PersonHandler());
+        server.createContext("/person/", new PersonHandler());
         server.createContext("/person", new PersonHandler());
-        server.createContext("/event/[eventID]", new EventHandler());
+        server.createContext("/event/", new EventHandler());
         server.createContext("/event", new EventHandler());
+        server.createContext("/", new RootHandler());
         System.out.println("Starting server");
         server.start();
         System.out.println("Server started");
@@ -41,3 +42,13 @@ public class Server {
     }
 
 }
+
+/*
+CAPTAIN'S LOG:
+Root handler, what?
+Go over what an HTTP exchange is and where the data is in it
+How do I parse data from json that isn't packaged as a request
+Am I understanding this whole thing correctly
+Where do I put index.html and how do I make my program talk to it
+
+ */

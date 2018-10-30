@@ -13,6 +13,10 @@ import Server.Services.Register.Register;
 import Server.Services.Register.RegisterRequest;
 import Server.Services.Register.RegisterResponse;
 import jdk.nashorn.api.scripting.JSObject;
+
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.lang.Object;
 
 public class RegisterHandler  implements HttpHandler {
@@ -21,24 +25,34 @@ public class RegisterHandler  implements HttpHandler {
         boolean success = false;
         try {
             if (exchange.getRequestMethod().toLowerCase().equals("post")) {
+                //get input data
                 InputStream reqBody = exchange.getRequestBody();
                 String reqData = readString(reqBody);
                 System.out.println(reqData);
                 Gson gson = new Gson();
                 RegisterRequest request = gson.fromJson(reqData, RegisterRequest.class);
 
+                //talk to service
                 Register registerService = new Register();
                 RegisterResponse response = registerService.register(request);
-                //how to send response back?
+
+                //send response
+                exchange.sendResponseHeaders(200, 0);
+                Writer out = new OutputStreamWriter(exchange.getResponseBody());
+                gson.toJson(response, out);
+                out.close();
+                System.out.println("response body: " + gson.toJson(response));
 
             }
 
         }
         catch (IOException e) {
             e.printStackTrace();
+            success = false;
         }
 
     }
+
     private String readString(InputStream is) throws IOException {
         StringBuilder sb = new StringBuilder();
         InputStreamReader sr = new InputStreamReader(is);

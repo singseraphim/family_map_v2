@@ -8,17 +8,17 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 
-import Server.Services.Fill.Fill;
-import Server.Services.Fill.FillResponse;
+import Server.Services.Person.PeopleResponse;
+import Server.Services.Person.Person;
 
-public class FillHandler  implements HttpHandler {
+public class PeopleHandler  implements HttpHandler {
     @Override
     public void handle(HttpExchange exchange) throws IOException {
-        //get data from exchange somehow
+        //get authtoken data somehow
 
         //talk to service
-        Fill fillService = new Fill();
-        FillResponse response = fillService.fill("username", 0); //fix later
+        Person personService = new Person();
+        PeopleResponse response = personService.getPeople("foo");
 
         //send response
         Gson gson = new Gson();

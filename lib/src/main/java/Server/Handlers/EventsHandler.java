@@ -8,17 +8,17 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 
-import Server.Services.Fill.Fill;
-import Server.Services.Fill.FillResponse;
+import Server.Services.Event.Event;
+import Server.Services.Event.EventsResponse;
 
-public class FillHandler  implements HttpHandler {
+public class EventsHandler  implements HttpHandler {
     @Override
     public void handle(HttpExchange exchange) throws IOException {
-        //get data from exchange somehow
+        //get input data
 
         //talk to service
-        Fill fillService = new Fill();
-        FillResponse response = fillService.fill("username", 0); //fix later
+        Event eventService = new Event();
+        EventsResponse response = eventService.getEvents("foo");
 
         //send response
         Gson gson = new Gson();
@@ -27,7 +27,6 @@ public class FillHandler  implements HttpHandler {
         gson.toJson(response, out);
         out.close();
         System.out.println("response body: " + gson.toJson(response));
-
 
     }
 }

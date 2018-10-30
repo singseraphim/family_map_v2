@@ -64,6 +64,20 @@ public class AuthDAO {
         }
     }
 
+    /*
+    BASIC SETUP FOR TALKING TO SQL:
+    Make a string with your sql command
+    Open a connection to the database
+    stmt = conn.createStatement();
+    ResultSet rs = stmt.executeQuery(sqlString);
+    while(rs.next())
+    result set has all the stuff from the SQL table
+    parse data from the result set
+    stmt.close
+    close connection
+    return whatever
+     */
+
     //CREATE TABLE
     public void createTables() {
         try {
@@ -213,12 +227,13 @@ public class AuthDAO {
     public AuthToken get(String userName) {
         AuthToken token = new AuthToken();
         String sql = "SELECT * FROM AuthTokens where UserName = '" + userName + "'";
+        //select blah where username = 'thing'
         try {
             if (!tableExists()) {
                 createTables();
             }
             openConnection();
-            System.out.println("Auth.get opened connection"); //    WHY DOES THE DATA EXIST IN THE TABLE ALREADY
+            System.out.println("Auth.get opened connection");
 
             Statement st = conn.createStatement();
             ResultSet rs = st.executeQuery(sql);

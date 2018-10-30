@@ -71,6 +71,7 @@ public class Fill {
         String fNamesJson = readFile("lib/src/Resources/fnames.json");
         String locationsJson = readFile("lib/src/Resources/locations.json");
         String sNamesJson = readFile("lib/src/Resources/snames.json");
+
         try {
             maleNames = gson.fromJson(mNamesJson, MaleNames.class);
             femaleNames = gson.fromJson(fNamesJson, FemaleNames.class);
@@ -273,7 +274,7 @@ public class Fill {
 
     public static String readFile(String fileName) {
         String result = "";
-        try {
+          try {
             BufferedReader br = new BufferedReader(new FileReader(fileName));
             StringBuilder sb = new StringBuilder();
             String line = br.readLine();
