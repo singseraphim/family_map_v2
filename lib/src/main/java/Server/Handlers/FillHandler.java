@@ -16,9 +16,18 @@ public class FillHandler  implements HttpHandler {
     public void handle(HttpExchange exchange) throws IOException {
         //get data from exchange somehow
 
+        String path = exchange.getRequestURI().getPath();
+        path = path.substring(1);
+        String[] args = path.split("/");
+        String username = args[1];
+        int generations = 4;
+        if (args.length > 2) {
+            generations = Integer.parseInt(args[2]);
+        }
+
         //talk to service
         Fill fillService = new Fill();
-        FillResponse response = fillService.fill("username", 0); //fix later
+        FillResponse response = fillService.fill(username, generations); //fix later
 
         //send response
         Gson gson = new Gson();

@@ -1,9 +1,12 @@
 package Server.Handlers;
 
+import com.google.gson.Gson;
 import com.sun.net.httpserver.HttpServer;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+
+import Server.Services.Register.RegisterRequest;
 
 public class Server {
     private static final int MAX_WAITING_CONNECTIONS = 12;
@@ -27,9 +30,9 @@ public class Server {
         server.createContext("/fill", new FillHandler());
         server.createContext("/load", new LoadHandler());
         server.createContext("/person/", new PersonHandler());
-        server.createContext("/person", new PersonHandler());
+        server.createContext("/person", new PeopleHandler());
         server.createContext("/event/", new EventHandler());
-        server.createContext("/event", new EventHandler());
+        server.createContext("/event", new EventsHandler());
         server.createContext("/", new RootHandler());
         System.out.println("Starting server");
         server.start();

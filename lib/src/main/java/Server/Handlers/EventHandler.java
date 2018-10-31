@@ -15,10 +15,15 @@ public class EventHandler  implements HttpHandler {
     @Override
     public void handle(HttpExchange exchange) throws IOException {
         //get input data
+        String auth = exchange.getRequestHeaders().get("Authorization").get(0);
+        String path = exchange.getRequestURI().getPath();
+        path = path.substring(1);
+        String[] args = path.split("/");
+        String eventID = args[1];
 
         //talk to service
         Event eventService = new Event();
-        EventResponse response = eventService.getEvent("foo", "bar");
+        EventResponse response = eventService.getEvent(eventID, auth);
 
         //send response
         Gson gson = new Gson();
@@ -27,6 +32,5 @@ public class EventHandler  implements HttpHandler {
         gson.toJson(response, out);
         out.close();
         System.out.println("response body: " + gson.toJson(response));
-
     }
 }

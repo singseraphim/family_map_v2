@@ -15,12 +15,13 @@ public class PeopleHandler  implements HttpHandler {
     @Override
     public void handle(HttpExchange exchange) throws IOException {
         //get authtoken data somehow
+        String auth = exchange.getRequestHeaders().get("Authorization").get(0);
 
-        //talk to service
+        //talk to service:
         Person personService = new Person();
-        PeopleResponse response = personService.getPeople("foo");
+        PeopleResponse response = personService.getPeople(auth); //fix later
 
-        //send response
+        //write data:
         Gson gson = new Gson();
         exchange.sendResponseHeaders(200, 0);
         Writer out = new OutputStreamWriter(exchange.getResponseBody());

@@ -175,11 +175,11 @@ public class PersonDAO {
      * @return a bool that indicates whether the insert operation was successful
      */
     public boolean insert(Person person) throws DatabaseException {
-        if (person.descendant == null || person.descendant == "" || person.gender == null || person.gender == ""
-                || person.firstName == null || person.firstName == "" || person.lastName == null || person.lastName == ""
-                || person.personID == null || person.personID == "")
+        if (person.descendant == null || person.descendant.equals("") || person.gender == null || person.gender.equals("")
+                || person.firstName == null || person.firstName.equals("") || person.lastName == null || person.lastName.equals("")
+                || person.personID == null || person.personID.equals(""))
             throw new DatabaseException("Required field is empty");
-        if (person.gender != "f" && person.gender != "m")
+        if (!person.gender.equals("f") && !person.gender.equals("m"))
             throw new DatabaseException("This project does not support the gender spectrum");
 
         if(existsInPersons(person.personID)) throw new DatabaseException("Person already exists in table");
@@ -273,7 +273,6 @@ public class PersonDAO {
             stmt.executeUpdate();
         } catch (SQLException e) {
             System.out.println(e.toString());
-            throw new DatabaseException();
         }
         finally {
             closeConnection(true);
@@ -369,7 +368,7 @@ public class PersonDAO {
     public boolean addParents(String momID, String dadID, String personID) throws DatabaseException {
         String sql = "update Persons set Mother = '" + momID + "', Father = '" + dadID +
                 "' where PersonID = '" + personID + "';";
-        if (momID == null || momID == "" || dadID == null || dadID == "") {
+        if (momID == null || momID.equals("") || dadID == null || dadID.equals("")) {
             throw new DatabaseException("No parent ID's");
         }
         Person testMom = getPerson(momID);
@@ -395,7 +394,7 @@ public class PersonDAO {
 
     public boolean addSpouse(String spouseID, String personID) throws DatabaseException {
         String sql = "update Persons set Spouse = '" + spouseID + "' where PersonID = '" + personID + "';";
-        if (spouseID == null || spouseID == "" || personID == null || personID == "")
+        if (spouseID == null || spouseID.equals("") || personID == null || personID.equals(""))
             throw new DatabaseException("Empty field");
         getPerson(spouseID);
         getPerson(personID);

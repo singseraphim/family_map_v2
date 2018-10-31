@@ -151,16 +151,17 @@ public class EventDAO {
             System.out.println("EventDAO.getEvent opened connection");
             Statement st = conn.createStatement();
             ResultSet rs = st.executeQuery(sql);
-
-            event.eventID = rs.getString("EventID");
-            event.eventType = rs.getString("EventType");
-            event.city = rs.getString("City");
-            event.country = rs.getString("Country");
-            event.longitude = rs.getDouble("Longitude");
-            event.latitude = rs.getDouble("Latitude");
-            event.descendant = rs.getString("Descendant");
-            event.person = rs.getString("Person");
-            event.year = rs.getInt("Year");
+            while (rs.next()) {
+                event.eventID = rs.getString("EventID");
+                event.eventType = rs.getString("EventType");
+                event.city = rs.getString("City");
+                event.country = rs.getString("Country");
+                event.longitude = rs.getDouble("Longitude");
+                event.latitude = rs.getDouble("Latitude");
+                event.descendant = rs.getString("Descendant");
+                event.person = rs.getString("Person");
+                event.year = rs.getInt("Year");
+            }
 
         } catch (SQLException e) {
             System.out.println(e.toString());
@@ -180,7 +181,7 @@ public class EventDAO {
      */
     public boolean insert(Event event) throws DatabaseException {
         if (event.eventID == null || event.person == null || event.descendant == null ||
-                event.eventID == "" || event.person == "" || event.descendant == "")
+                event.eventID.equals("") || event.person.equals("") || event.descendant.equals(""))
             throw new DatabaseException("Required field is empty");
         Event testEvent = getEvent(event.eventID);
         if(testEvent.eventID != null) throw new DatabaseException("Event ID already exists");
@@ -244,8 +245,7 @@ public class EventDAO {
             stmt.executeUpdate();
             stmt.close();
         } catch (SQLException e) {
-            System.out.println("Issue removing person");
-            throw new DatabaseException();
+            System.out.println(e.toString());
         }
         finally {
             closeConnection(true);

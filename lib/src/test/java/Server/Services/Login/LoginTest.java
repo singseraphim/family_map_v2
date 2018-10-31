@@ -74,14 +74,6 @@ public class LoginTest {
         assertFalse(loginResponse.success);
         assertTrue(loginResponse.message == "Incorrect password.");
     }
-
-    @Test
-    public void loginAlreadyLoggedIn() {
-        loginService.login(request);
-        LoginResponse loginResponse = loginService.login(request);
-
-        assertFalse(loginResponse.success);
-        assertTrue(loginResponse.message == "Already logged in.");
-    }
+    
 
 }

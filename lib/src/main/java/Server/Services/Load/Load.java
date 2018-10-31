@@ -46,7 +46,7 @@ public class Load {
         }
         catch(DatabaseException e) {
             System.out.println(e.toString());
-            response.message = "Loading threw a database exception, invalid information.";
+            response.message = "Error loading: " + e.toString();
             response.success = false;
             authDAO.clear(); //clearing all data if there's an error. Optional.
             eventDAO.clear();

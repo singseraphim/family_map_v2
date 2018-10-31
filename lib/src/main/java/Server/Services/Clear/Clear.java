@@ -24,7 +24,7 @@ public class Clear {
         person.clear();
         user.clear();
 
-        response.message = "Server.Services.Clear complete.";
+        response.message = "Clear complete.";
         return response;
     }
 

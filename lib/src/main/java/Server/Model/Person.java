@@ -18,9 +18,6 @@ public class Person {
     public String mother;
     public String spouse;
 
-    EventDAO eventDAO = new EventDAO();
-    PersonDAO personDAO = new PersonDAO();
-
     @Override
     public String toString() {
         return "Server.Services.Person{" +
@@ -51,18 +48,30 @@ public class Person {
     }
 
     public int getBirth() {
+
+        EventDAO eventDAO = new EventDAO();
+
         return eventDAO.getBirth(personID);
     }
 
     public int getDeath() {
+
+        EventDAO eventDAO = new EventDAO();
+
         return eventDAO.getDeath(personID);
     }
 
     public int getMarriage() {
+
+        EventDAO eventDAO = new EventDAO();
+
         return eventDAO.getMarriage(personID);
     }
 
     public void setParents(Person mom, Person dad) {
+
+        PersonDAO personDAO = new PersonDAO();
+
         try {
             personDAO.addParents(mom.personID, dad.personID, personID);
         }
@@ -72,6 +81,9 @@ public class Person {
     }
 
     public void setSpouse(Person spouse) {
+
+        PersonDAO personDAO = new PersonDAO();
+
         try {
             personDAO.addSpouse(spouse.personID, personID);
         }

@@ -100,12 +100,12 @@ public class UserDAO {
     public boolean insert(User user) throws DatabaseException {
         
         if (user.firstName == null || user.lastName == null || user.email == null || user.password == null
-                || user.userName == null || user.personID == null || user.gender == null ||  user.firstName == ""
-                || user.lastName == "" || user.email == "" || user.password == ""
-                || user.userName == "" || user.personID == "" || user.gender == "")
+                || user.userName == null || user.personID == null || user.gender == null ||  user.firstName.equals("")
+                || user.lastName.equals("") || user.email.equals("") || user.password.equals("")
+                || user.userName.equals("") || user.personID.equals("") || user.gender.equals(""))
             throw new DatabaseException("Empty field");
 
-        if (user.gender != "f" && user.gender != "m")
+        if (!user.gender.equals("f") && !user.gender.equals("m"))
             throw new DatabaseException("This project does not support the gender spectrum");
 
         try {

@@ -9,6 +9,7 @@ import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
+import Exceptions.DatabaseException;
 import Server.DAO.EventDAO;
 import Server.DAO.PersonDAO;
 import Server.DAO.UserDAO;
@@ -34,28 +35,46 @@ public class Fill {
     FemaleNames femaleNames;
     Surnames surnames;
     Locations locations;
+
     ArrayList<Person> currentGen = new ArrayList<>();
     ArrayList<Person> nextGen = new ArrayList<>();
+
     User currentUser;
+    String currentUsername;
+
     int numPeopleAdded = 0;
     int numEventsAdded = 0;
 
     int finalGenNum = 0;
     int currentGenNum = 0;
+
     UserDAO userDAO = new UserDAO();
     PersonDAO personDAO = new PersonDAO();
     EventDAO eventDAO = new EventDAO();
+
     public FillResponse fill(String username, int generations) {
         FillResponse response = new FillResponse();
         UserDAO userDAO = new UserDAO();
-        if (username == null || username == "") {
+        if (username == null || username.equals("")) {
             response.message = "Empty username field";
             response.success = false;
             return response;
         }
-        User testUser = userDAO.getUser(username);
-        if (testUser.userName == null) {
+        User currentUser = userDAO.getUser(username);
+        currentUsername = currentUser.userName;
+        Person userPerson = personDAO.getPerson(currentUser.personID);
+        if (currentUsername == null) {
             response.message = "User does not exist";
+            response.success = false;
+            return response;
+        }
+        try {
+            personDAO.removePeople(username);
+            eventDAO.removeEvents(username);
+            personDAO.insert(userPerson);
+        }
+        catch (DatabaseException e) {
+            response.message = e.toString();
             response.success = false;
             return response;
         }
@@ -63,7 +82,7 @@ public class Fill {
             response.message = "Invalid number of generations";
             response.success = false;
             return response;
-        }
+        } //move this higher
 
 
         Gson gson = new Gson();
@@ -82,19 +101,14 @@ public class Fill {
         catch(Exception e) {
             System.out.println(e.toString());
         }
+        addBirth(userPerson, 2018);
+        //note: this increments numEvents by one. Decrement if you need to hide the birth event.
 
-        Person currentPerson = new Person();
-        try {
-            currentUser = userDAO.getUser(username);
-            currentPerson = personDAO.getPerson(currentUser.personID);
-        }
-        catch(Exception e) {
 
-        }
 
         finalGenNum = generations;
         currentGenNum = 0;
-        currentGen.add(currentPerson);
+        currentGen.add(userPerson);
         addGeneration();
         response.message = "Successfully added " + numPeopleAdded + " persons" +
                 " and " + numEventsAdded + " events to the database.\n";
@@ -107,10 +121,15 @@ public class Fill {
             return true;
         }
         for (Person child : currentGen) {
+            System.out.println("Making mom for " + child.firstName);
             Person mom = makeMom(child);
+            System.out.println("Making dad for " + child.firstName);
             Person dad = makeDad(child);
+            System.out.println("Marrying " + mom.firstName + " and " + dad.firstName);
             marry(mom, dad, child);
+            System.out.println("Setting parents for " + child.firstName);
             child.setParents(mom, dad);
+            System.out.println("Setting spouses: ");
             mom.setSpouse(dad);
             dad.setSpouse(mom);
             nextGen.add(mom);
@@ -127,7 +146,7 @@ public class Fill {
         Person mom = new Person();
         mom.firstName = getRandomFemaleName();
         mom.lastName = getRandomSurname();
-        mom.descendant = currentUser.userName;
+        mom.descendant = currentUsername; //setting to null randomly why
         mom.personID = UUID.randomUUID().toString();
         mom.gender = "f";
         addBirth(mom, child.getBirth());
@@ -145,7 +164,7 @@ public class Fill {
     Person makeDad(Person child) {
         Person dad = new Person();
         dad.firstName = getRandomMaleName();
-        dad.descendant = currentUser.userName;
+        dad.descendant = currentUsername;
         dad.personID = UUID.randomUUID().toString();
         dad.gender = "m";
         addBirth(dad, child.getBirth());
@@ -169,7 +188,7 @@ public class Fill {
         birth.year = birthYear;
         birth.eventType = "Birth";
         birth.eventID = UUID.randomUUID().toString();
-        birth.descendant = currentUser.userName;
+        birth.descendant = currentUsername;
         birth.longitude = Double.parseDouble(randomLocation.longitude);
         birth.latitude = Double.parseDouble(randomLocation.latitude);
         birth.city = randomLocation.city;
@@ -193,7 +212,7 @@ public class Fill {
         death.year = deathYear;
         death.eventType = "Death";
         death.eventID = UUID.randomUUID().toString();
-        death.descendant = currentUser.userName;
+        death.descendant = currentUsername;
         death.longitude = Double.parseDouble(randomLocation.longitude);
         death.latitude = Double.parseDouble(randomLocation.latitude);
         death.city = randomLocation.city;
@@ -217,7 +236,7 @@ public class Fill {
         brideMarriage.person = lovelyBride.personID;
         brideMarriage.eventType = "Marriage";
         brideMarriage.eventID = UUID.randomUUID().toString();
-        brideMarriage.descendant = currentUser.userName;
+        brideMarriage.descendant = currentUsername;
         brideMarriage.longitude = Double.parseDouble(randomLocation.longitude);
         brideMarriage.latitude = Double.parseDouble(randomLocation.latitude);
         brideMarriage.city = randomLocation.city;
@@ -227,7 +246,7 @@ public class Fill {
         groomMarriage.person = dashingGroom.personID;
         groomMarriage.eventType = "Marriage";
         groomMarriage.eventID = UUID.randomUUID().toString();
-        groomMarriage.descendant = currentUser.userName;
+        groomMarriage.descendant = currentUsername;
         groomMarriage.longitude = brideMarriage.longitude;
         groomMarriage.latitude = brideMarriage.latitude;
         groomMarriage.city = brideMarriage.city;

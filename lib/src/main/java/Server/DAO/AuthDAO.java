@@ -118,10 +118,10 @@ public class AuthDAO {
         if (!tableExists()) {
             createTables();
         }
-        if (token.userName == null || token.userName == "") {
+        if (token.userName == null || token.userName.equals("")) {
             throw new DatabaseException("Token missing username");
         }
-        if (token.authToken == null || token.authToken == "") {
+        if (token.authToken == null || token.authToken.equals("")) {
             throw new DatabaseException("Token missing token string");
         }
         AuthToken testToken = get(token.userName);

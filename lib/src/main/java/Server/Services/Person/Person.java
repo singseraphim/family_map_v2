@@ -56,7 +56,7 @@ public class Person {
             return response;
         }
         else {
-            response.message = "personID or authToken do not exist.";
+            response.message = "personID or authToken are invalid.";
             response.success = false;
             return response;
         }

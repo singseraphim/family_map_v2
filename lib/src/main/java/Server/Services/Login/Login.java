@@ -43,18 +43,24 @@ public class Login {
             response.success = false;
             return response;
         }
-        if (loggedIn(request.userName)) {
-            response.message = "Already logged in.";
-            response.success = false;
-            return response;
-        }
-
         AuthDAO authDAO = new AuthDAO();
+        if (loggedIn(request.userName)) {
+            AuthToken currentUser = authDAO.get(request.userName);
+            try {
+                authDAO.remove(currentUser);
+            }
+            catch(DatabaseException e) {
+                response.message = "Issues removing old token from table: " + e.toString();
+                response.success = false;
+                return response;
+            }
+        } //fix unit test- changed to allow multiple logins
+
         AuthToken newToken = new AuthToken();
         newToken.userName = request.userName;
-        newToken.authToken = UUID.randomUUID().toString().substring(0, 8);
+        newToken.authToken = UUID.randomUUID().toString();
         try {
-            authDAO.insert(newToken); //this does not work.
+            authDAO.insert(newToken);
         }
         catch(DatabaseException e) {
             System.out.println(e.toString());

@@ -25,7 +25,13 @@ public class RegisterTest {
         user.email = "f";
         user.gender = "f";
         user.personID = "h";
-        request.newUser = user;
+
+        request.userName = "b";
+        request.password = "c";
+        request.lastName = "d";
+        request.firstName = "e";
+        request.email = "f";
+        request.gender = "f";
     }
 
     @After
@@ -53,7 +59,7 @@ public class RegisterTest {
     }
     @Test
     public void registerEmptyData() {
-        request.newUser.userName = "";
+        request.userName = "";
         RegisterResponse response = registerService.register(request);
         assertFalse(response.success);
         assertTrue(response.message == "Username blank");
@@ -61,7 +67,7 @@ public class RegisterTest {
     @Test
     public void registerInvalidGender() {
 
-        request.newUser.gender = "z";
+        request.gender = "z";
         RegisterResponse response = registerService.register(request);
         assertFalse(response.success);
         assertTrue(response.message == "Invalid gender");
