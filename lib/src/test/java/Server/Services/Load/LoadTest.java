@@ -85,8 +85,8 @@ public class LoadTest {
 
         request.events.add(event);
         request.events.add(event2);
-        request.people.add(person);
-        request.people.add(person2);
+        request.persons.add(person);
+        request.persons.add(person2);
         request.users.add(user);
         request.users.add(user2);
 
@@ -121,6 +121,6 @@ public class LoadTest {
         request.users.add(user);
         request.users.add(user2);
         LoadResponse response = loadService.load(request);
-        assertTrue(response.message == "Loading threw a database exception, invalid information.");
+        assertFalse(response.success);
     }
 }

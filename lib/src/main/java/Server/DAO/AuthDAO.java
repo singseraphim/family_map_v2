@@ -1,4 +1,5 @@
 package Server.DAO;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -9,7 +10,6 @@ import java.util.ArrayList;
 
 import Exceptions.DatabaseException;
 import Server.Model.AuthToken;
-import Server.Model.Event;
 import Server.Model.User;
 
 /**
@@ -58,25 +58,10 @@ public class AuthDAO {
             conn = null;
         } catch (SQLException e) {
             System.out.println(e.toString());
-        }
-        catch (NullPointerException e) {
+        } catch (NullPointerException e) {
 
         }
     }
-
-    /*
-    BASIC SETUP FOR TALKING TO SQL:
-    Make a string with your sql command
-    Open a connection to the database
-    stmt = conn.createStatement();
-    ResultSet rs = stmt.executeQuery(sqlString);
-    while(rs.next())
-    result set has all the stuff from the SQL table
-    parse data from the result set
-    stmt.close
-    close connection
-    return whatever
-     */
 
     //CREATE TABLE
     public void createTables() {
@@ -107,14 +92,13 @@ public class AuthDAO {
     }
 
 
-
-
-        /**
-         * Inserts the data in the given token into the AuthToken table.
-         * @param token: token object that represents the data to be inserted
-         * @return a bool that indicates whether or not the insertion was successful.
-         */
-    public boolean insert(AuthToken token) throws DatabaseException{
+    /**
+     * Inserts the data in the given token into the AuthToken table.
+     *
+     * @param token: token object that represents the data to be inserted
+     * @return a bool that indicates whether or not the insertion was successful.
+     */
+    public boolean insert(AuthToken token) throws DatabaseException {
         if (!tableExists()) {
             createTables();
         }
@@ -162,6 +146,7 @@ public class AuthDAO {
 
     /**
      * Removes the given token from the AuthToken table.
+     *
      * @param token: token object that represents the data to be deleted
      * @return a bool that indicates whether or not the remove was successful.
      */
@@ -185,8 +170,7 @@ public class AuthDAO {
 
         } catch (SQLException e) {
             System.out.println(e.toString());
-        }
-        finally {
+        } finally {
             closeConnection(true);
             System.out.println("Auth.remove closed connection");
 
@@ -196,6 +180,7 @@ public class AuthDAO {
 
     /**
      * Executes a DROP TABLE statement on the AuthToken table.
+     *
      * @return a bool that indicates whether or not the clear was successful.
      */
     public boolean clear() {
@@ -207,10 +192,10 @@ public class AuthDAO {
             System.out.println("Auth.clear opened connection");
             stmt = conn.createStatement();
             stmt.executeUpdate(sql);
+            stmt.close();
         } catch (SQLException e) {
             System.out.println(e.toString());
-        }
-        finally {
+        } finally {
             closeConnection(true);
             System.out.println("Auth.clear closed connection");
 
@@ -221,13 +206,13 @@ public class AuthDAO {
 
     /**
      * Returns an authtoken corresponding to the given username
+     *
      * @param userName username tied to the token that will be returned
      * @return an authtoken object
      */
     public AuthToken get(String userName) {
         AuthToken token = new AuthToken();
         String sql = "SELECT * FROM AuthTokens where UserName = '" + userName + "'";
-        //select blah where username = 'thing'
         try {
             if (!tableExists()) {
                 createTables();
@@ -237,25 +222,18 @@ public class AuthDAO {
 
             Statement st = conn.createStatement();
             ResultSet rs = st.executeQuery(sql);
-            while(rs.next()) {
+            while (rs.next()) {
                 token.userName = rs.getString("UserName");
                 token.authToken = rs.getString("AuthToken");
             }
-        }
-        catch (SQLException e) {
+            st.close();
+        } catch (SQLException e) {
             System.out.println(e.toString());
-        }
-        finally {
+        } finally {
             closeConnection(true);
             System.out.println("Auth.get closed connection");
         }
         return token;
-    }
-
-    public static void main(String[] args) {
-        AuthDAO authDAO = new AuthDAO();
-        User user = authDAO.getUser("TestToken");
-        System.out.println(user.firstName);
     }
 
     public User getUser(String authToken) {
@@ -271,8 +249,8 @@ public class AuthDAO {
             Statement st = conn.createStatement();
             ResultSet rs = st.executeQuery(sql);
 
-            while(rs.next()) {
-               String username = rs.getString("UserName");
+            while (rs.next()) {
+                String username = rs.getString("UserName");
                 userList.add(username);
             }
             st.close();
@@ -284,8 +262,7 @@ public class AuthDAO {
             }
             UserDAO userDAO = new UserDAO();
             returnUser = userDAO.getUser(userList.get(0));
-        }
-        catch(SQLException e) {
+        } catch (SQLException e) {
             System.out.println(e.toString());
         }
         return returnUser;
@@ -303,17 +280,14 @@ public class AuthDAO {
                     tExists = true;
                 }
             }
-        }
-        catch (SQLException e) {
+        } catch (SQLException e) {
             System.out.println(e.toString());
-        }
-        finally {
+        } finally {
             closeConnection(true);
             System.out.println("Auth.tableExists closed connection");
         }
         return tExists;
     }
-
 
 
 }

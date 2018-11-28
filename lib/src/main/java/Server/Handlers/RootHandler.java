@@ -14,53 +14,56 @@ public class RootHandler implements HttpHandler {
     public void handle(HttpExchange exchange) throws IOException {
         String filePathStr = exchange.getRequestURI().getPath();
         File testFile = new File(filePathStr);
-        if(filePathStr.equals("/")) {
-            String fullPath = "lib/src/web/index.html";
-            Path filePath = FileSystems.getDefault().getPath(fullPath);
+        String fullPath;
+        if(filePathStr.equals("/") || filePathStr.contains("index.html")) { //or index.html
             exchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
+            fullPath = "lib/src/web/index.html";
+            Path filePath = FileSystems.getDefault().getPath(fullPath);
             Files.copy(filePath, exchange.getResponseBody());
             exchange.getResponseBody().close();
         }
-        else if(testFile.exists() && testFile.canRead()) {
-            String fullPath = testFile.getPath();
+        else if (filePathStr.contains("main.css")) {
             exchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
-            Path filePath = FileSystems.getDefault().getPath(fullPath);
-            Files.copy(filePath, exchange.getResponseBody());
-        }
-        else {
-            String fullPath = "lib/src/web/HTML/404.html";
-            exchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
-            Path filePath = FileSystems.getDefault().getPath(fullPath);
-            Files.copy(filePath, exchange.getResponseBody());
-        }
-       /* if (filePathStr.contains("main.css")) {
             fullPath = "lib/src/web/css/main.css";
             Path filePath = FileSystems.getDefault().getPath(fullPath);
             Files.copy(filePath, exchange.getResponseBody());
+            exchange.getResponseBody().close();
+
         }
         else if (filePathStr.contains("404.html")) {
+            exchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
             fullPath = "lib/src/web/HTML/404.html";
             Path filePath = FileSystems.getDefault().getPath(fullPath);
             Files.copy(filePath, exchange.getResponseBody());
+            exchange.getResponseBody().close();
+
         }
         else if (filePathStr.contains("favicon.ico")) {
+            exchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
+
             fullPath = "lib/src/web/favicon.ico";
             Path filePath = FileSystems.getDefault().getPath(fullPath);
             Files.copy(filePath, exchange.getResponseBody());
+            exchange.getResponseBody().close();
+
         }
         else if (filePathStr.contains("favicon.jpg")) {
+            exchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
+
             fullPath = "lib/src/web/favicon.jpg";
             Path filePath = FileSystems.getDefault().getPath(fullPath);
             Files.copy(filePath, exchange.getResponseBody());
+            exchange.getResponseBody().close();
+
         }
         else {
+            exchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
+
             fullPath = "lib/src/web/index.html";
             Path filePath = FileSystems.getDefault().getPath(fullPath);
-            exchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
             Files.copy(filePath, exchange.getResponseBody());
             exchange.getResponseBody().close();
         }
-*/
 
     }
 }

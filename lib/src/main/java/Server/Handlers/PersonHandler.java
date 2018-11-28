@@ -10,14 +10,13 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 
-import Server.Services.Person.PeopleResponse;
 import Server.Services.Person.Person;
 import Server.Services.Person.PersonResponse;
 
 public class PersonHandler  implements HttpHandler {
     @Override
     public void handle(HttpExchange exchange) throws IOException {
-        //get data somehow
+        //get data
         String auth = exchange.getRequestHeaders().get("Authorization").get(0);
         String path = exchange.getRequestURI().getPath();
         path = path.substring(1);

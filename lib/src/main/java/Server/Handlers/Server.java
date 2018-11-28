@@ -1,12 +1,9 @@
 package Server.Handlers;
 
-import com.google.gson.Gson;
 import com.sun.net.httpserver.HttpServer;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
-
-import Server.Services.Register.RegisterRequest;
 
 public class Server {
     private static final int MAX_WAITING_CONNECTIONS = 12;
@@ -24,7 +21,7 @@ public class Server {
         }
         server.setExecutor(null);
         System.out.println("Creating contexts");
-        server.createContext("/user/register", new RegisterHandler()); //may need to make more handlers for events and persons
+        server.createContext("/user/register", new RegisterHandler());
         server.createContext("/user/login", new LoginHandler());
         server.createContext("/clear", new ClearHandler());
         server.createContext("/fill", new FillHandler());

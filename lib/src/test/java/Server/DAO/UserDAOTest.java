@@ -47,18 +47,6 @@ public class UserDAOTest {
 
     }
 
-    @Test (expected = DatabaseException.class)
-    public void insertWithEmptyFields() throws DatabaseException {
-        User user = new User();
-        user.userName = "InsertUnitTestUser";
-        user.lastName = "c";
-        user.firstName = "d";
-        user.gender = "f";
-        user.personID = "g";
-        userDAO.insert(user);
-
-    }
-
     @Test
     public void getUser() throws DatabaseException {
 

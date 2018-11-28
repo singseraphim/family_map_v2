@@ -14,7 +14,7 @@ import Server.Services.Person.Person;
 public class PeopleHandler  implements HttpHandler {
     @Override
     public void handle(HttpExchange exchange) throws IOException {
-        //get authtoken data somehow
+        //get data
         String auth = exchange.getRequestHeaders().get("Authorization").get(0);
 
         //talk to service:

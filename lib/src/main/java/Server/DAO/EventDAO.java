@@ -59,8 +59,7 @@ public class EventDAO {
             conn = null;
         } catch (SQLException e) {
             System.out.println(e.toString());
-        }
-        catch (NullPointerException e) {
+        } catch (NullPointerException e) {
 
         }
     }
@@ -75,8 +74,8 @@ public class EventDAO {
                 stmt = conn.createStatement();
                 stmt.executeUpdate("CREATE TABLE IF NOT EXISTS `Events` (\n" +
                         "\t`EventID`\tTEXT NOT NULL,\n" +
-                        "\t`Descendant`\tTEXT NOT NULL,\n" +
-                        "\t`Person`\tTEXT NOT NULL,\n" +
+                        "\t`Descendant`\tTEXT,\n" +
+                        "\t`Person`\tTEXT,\n" +
                         "\t`Latitude`\tREAL,\n" +
                         "\t`Longitude`\tREAL,\n" +
                         "\t`Country`\tTEXT,\n" +
@@ -111,26 +110,31 @@ public class EventDAO {
         String sql = "SELECT * FROM Events WHERE Descendant = '" + userName + "'";
         try {
             if (!tableExists()) createTables();
-            User testUser = userDAO.getUser(userName);
+            User testUser = userDAO.getUser(userName); //checking that the username is valid
             if (testUser.userName == null) throw new DatabaseException("User does not exist");
             openConnection();
             System.out.println("EventDAO.getEvents opened connection");
             Statement st = conn.createStatement();
             ResultSet rs = st.executeQuery(sql);
+            ArrayList<String> eventIDs = new ArrayList<>();
 
             while (rs.next()) {
-                Event newEvent = getEvent(rs.getString("EventID"));
+                eventIDs.add(rs.getString("EventID")); //makes an array of event ids
+            }
+
+            st.close();
+            closeConnection(true);
+            System.out.println("EventDAO.getEvents closed connection");
+
+            for (String eventID : eventIDs) { //adds each event id to the event table
+                Event newEvent = getEvent(eventID);
                 eventList.add(newEvent);
             }
-            st.close();
 
         } catch (SQLException e) {
             System.out.println(e.toString());
         }
-        finally {
-            closeConnection(true);
-            System.out.println("EventDAO.getEvents closed connection");
-        }
+
         return eventList;
     }
 
@@ -162,11 +166,10 @@ public class EventDAO {
                 event.person = rs.getString("Person");
                 event.year = rs.getInt("Year");
             }
-
+            st.close();
         } catch (SQLException e) {
             System.out.println(e.toString());
-        }
-        finally {
+        } finally {
             closeConnection(true);
             System.out.println("EventDAO.getEvent closed connection");
         }
@@ -180,11 +183,8 @@ public class EventDAO {
      * @return a bool that indicates whether the insert operation was successful
      */
     public boolean insert(Event event) throws DatabaseException {
-        if (event.eventID == null || event.person == null || event.descendant == null ||
-                event.eventID.equals("") || event.person.equals("") || event.descendant.equals(""))
-            throw new DatabaseException("Required field is empty");
-        Event testEvent = getEvent(event.eventID);
-        if(testEvent.eventID != null) throw new DatabaseException("Event ID already exists");
+        Event testEvent = getEvent(event.eventID); //checks that the event isn't already in the table
+        if (testEvent.eventID != null) throw new DatabaseException("Event ID already exists");
 
         try {
             PreparedStatement stmt = null;
@@ -234,7 +234,7 @@ public class EventDAO {
     public boolean remove(Event event) throws DatabaseException {
         assert (event != null);
         String sql = "delete from Events where EventID = '" + event.eventID + "';";
-        Event testEvent = getEvent(event.eventID);
+        Event testEvent = getEvent(event.eventID); //checks that the event exists in the table
         if (testEvent.eventID == null) throw new DatabaseException("Event does not exist");
 
         try {
@@ -246,8 +246,7 @@ public class EventDAO {
             stmt.close();
         } catch (SQLException e) {
             System.out.println(e.toString());
-        }
-        finally {
+        } finally {
             closeConnection(true);
             System.out.println("EventDAO.remove closed connection");
         }
@@ -265,19 +264,18 @@ public class EventDAO {
         String sql = "DELETE FROM Events WHERE Descendant = '" + userName + "'";
         try {
             UserDAO userDAO = new UserDAO();
-            User testUSer = userDAO.getUser(userName);
-            if (testUSer.userName == null) throw new DatabaseException();
+            User testUser = userDAO.getUser(userName); //checks that the user exists
+            if (testUser.userName == null) throw new DatabaseException();
             if (!tableExists()) createTables();
             openConnection();
             System.out.println("EventDAO.removeEvents opened connection");
 
             PreparedStatement stmt = conn.prepareStatement(sql);
             stmt.executeUpdate();
+            stmt.close();
         } catch (SQLException e) {
             System.out.println("Issue removing person");
-            throw new DatabaseException();
-        }
-        finally {
+        } finally {
             closeConnection(true);
             System.out.println("EventDAO.removeEvents closed connection");
         }
@@ -297,10 +295,10 @@ public class EventDAO {
             System.out.println("Event.clear opened connection");
             stmt = conn.createStatement();
             stmt.executeUpdate(sql);
+            stmt.close();
         } catch (SQLException e) {
             System.out.println(e.toString());
-        }
-        finally {
+        } finally {
             closeConnection(true);
             System.out.println("Event.clear closed connection");
 
@@ -311,6 +309,7 @@ public class EventDAO {
 
     /**
      * returns the user object that is the descendant of the given eventID.
+     *
      * @param eventID the id to find the user associated with.
      * @return a user object associated with the eventID.
      */
@@ -331,22 +330,22 @@ public class EventDAO {
             while (rs.next()) {
                 userList.add(rs.getString("Descendant"));
             }
+            st.close();
             closeConnection(true);
             System.out.println("EventDAO.getUser closed connection");
-            st.close();
 
             if (userList.size() == 0) {
                 return returnUser;
             }
             UserDAO userDAO = new UserDAO();
             returnUser = userDAO.getUser(userList.get(0));
-        }catch (SQLException e) {
+        } catch (SQLException e) {
             System.out.println(e.toString());
         }
         return returnUser;
     }
 
-    public int getBirth(String personID) {
+    public int getBirth(String personID) { //returns the birth year of a given person
         int returnYear = 0;
         String sql = "SELECT * FROM Events WHERE Person = '" + personID + "' AND EventType = 'Birth'";
         try {
@@ -357,6 +356,7 @@ public class EventDAO {
             while (rs.next()) {
                 returnYear = rs.getInt("Year");
             }
+            st.close();
             closeConnection(true);
             System.out.println("EventDAO.getBirth closed connection");
 
@@ -366,7 +366,7 @@ public class EventDAO {
         return returnYear;
     }
 
-    public int getDeath(String personID) {
+    public int getDeath(String personID) { //returns death year of a given person
         int returnYear = 0;
         String sql = "SELECT * FROM Events WHERE Person = '" + personID + "' AND EventType = 'Death'";
         try {
@@ -377,6 +377,7 @@ public class EventDAO {
             while (rs.next()) {
                 returnYear = rs.getInt("Year");
             }
+            st.close();
             closeConnection(true);
             System.out.println("EventDAO.getDeath closed connection");
 
@@ -386,7 +387,7 @@ public class EventDAO {
         return returnYear;
     }
 
-    public int getMarriage(String personID) {
+    public int getMarriage(String personID) { //returns marriage year of a given person
         int returnYear = 0;
         String sql = "SELECT * FROM Events WHERE Person = '" + personID + "' AND EventType = 'Marriage'";
         try {
@@ -397,6 +398,7 @@ public class EventDAO {
             while (rs.next()) {
                 returnYear = rs.getInt("Year");
             }
+            st.close();
             closeConnection(true);
             System.out.println("EventDAO.getMarriage closed connection");
 
@@ -418,11 +420,9 @@ public class EventDAO {
                     tExists = true;
                 }
             }
-        }
-        catch (SQLException e) {
+        } catch (SQLException e) {
             System.out.println(e.toString());
-        }
-        finally {
+        } finally {
             closeConnection(true);
             System.out.println("Person.tableExists closed connection");
         }

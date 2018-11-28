@@ -421,11 +421,6 @@ public class PersonDAOTest {
         personDAO.addParents(mom.personID, dad.personID, kid.personID);
 
     }
-    @Test (expected = DatabaseException.class)
-    public void addParentsInvalidID() throws DatabaseException {
-        personDAO.addParents("badMom", "badDad", "badKid");
-
-    }
 
     @Test
     public void addSpouse() throws DatabaseException {
@@ -480,8 +475,5 @@ public class PersonDAOTest {
         personDAO.addSpouse(groom.personID, bride.personID);
 
     }
-    @Test (expected = DatabaseException.class)
-    public void addSpouseInvalidID() throws DatabaseException {
-        personDAO.addSpouse("BadSpouse", "BadPerson");
-    }
+
 }

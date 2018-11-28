@@ -2,9 +2,6 @@ package Server.DAO;
 
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.List;
-
-import javax.xml.crypto.Data;
 
 import Exceptions.DatabaseException;
 import Server.Model.Person;
@@ -55,8 +52,7 @@ public class PersonDAO {
             conn = null;
         } catch (SQLException e) {
             System.out.println(e.toString());
-        }
-        catch(NullPointerException e) {
+        } catch (NullPointerException e) {
 
         }
     }
@@ -76,13 +72,12 @@ public class PersonDAO {
                         "\t`LastName`\tTEXT NOT NULL,\n" +
                         "\t`Gender`\tTEXT NOT NULL,\n" +
                         "\t`Father`\tTEXT,\n" +
-                         "\t`Mother`\tTEXT,\n" +
+                        "\t`Mother`\tTEXT,\n" +
                         "\t`Spouse`\tTEXT,\n" +
                         "\tPRIMARY KEY(`PersonID`)\n" +
                         ");");
 
-            }
-            finally {
+            } finally {
                 if (stmt != null) {
                     stmt.close();
                     stmt = null;
@@ -92,9 +87,9 @@ public class PersonDAO {
                 System.out.println("Person.createTables closed connection");
 
             }
-            } catch (SQLException e) {
-                System.out.println(e.toString());
-            }
+        } catch (SQLException e) {
+            System.out.println(e.toString());
+        }
     }
 
     /**
@@ -104,28 +99,29 @@ public class PersonDAO {
      * @return a list of Server.Services.Person objects associated with the given username.
      */
     public ArrayList<Person> getPeople(String userName) {
-        ArrayList<Person> personList = new ArrayList<Person>();
+        ArrayList<Person> personList = new ArrayList<>();
         String sql = "SELECT * FROM Persons WHERE Descendant = '" + userName + "'";
         try {
-            createTables();
+            if (!tableExists()) createTables();
             openConnection();
             System.out.println("Person.getPeople opened connection");
 
             Statement st = conn.createStatement();
             ResultSet rs = st.executeQuery(sql);
-
+            ArrayList<String> personIDs = new ArrayList<>();
             while (rs.next()) {
-                Person newPerson = getPerson(rs.getString("PersonID"));
-                personList.add(newPerson);
+                personIDs.add(rs.getString("PersonID"));
             }
             st.close();
-        } catch (SQLException e) {
-            System.out.println(e.toString());
-        }
-        finally {
             closeConnection(true);
             System.out.println("Person.getPeople closed connection");
 
+            for (String personID : personIDs) {
+                Person newPerson = getPerson(personID);
+                personList.add(newPerson);
+            }
+        } catch (SQLException e) {
+            System.out.println(e.toString());
         }
 
 
@@ -158,10 +154,10 @@ public class PersonDAO {
                 person.mother = rs.getString("Mother");
                 person.spouse = rs.getString("Spouse");
             }
+            st.close();
         } catch (SQLException e) {
             System.out.println(e.toString());
-        }
-        finally {
+        } finally {
             closeConnection(true);
             System.out.println("Person.getUser closed connection");
         }
@@ -175,14 +171,12 @@ public class PersonDAO {
      * @return a bool that indicates whether the insert operation was successful
      */
     public boolean insert(Person person) throws DatabaseException {
-        if (person.descendant == null || person.descendant.equals("") || person.gender == null || person.gender.equals("")
-                || person.firstName == null || person.firstName.equals("") || person.lastName == null || person.lastName.equals("")
-                || person.personID == null || person.personID.equals(""))
-            throw new DatabaseException("Required field is empty");
+
         if (!person.gender.equals("f") && !person.gender.equals("m"))
             throw new DatabaseException("This project does not support the gender spectrum");
 
-        if(existsInPersons(person.personID)) throw new DatabaseException("Person already exists in table");
+        if (existsInPersons(person.personID))
+            throw new DatabaseException("Person already exists in table");
 
         try {
             PreparedStatement stmt = null;
@@ -203,7 +197,6 @@ public class PersonDAO {
                 stmt.setString(6, person.father);
                 stmt.setString(7, person.mother);
                 stmt.setString(8, person.spouse);
-                //System.out.println("inserted user");
                 if (stmt.executeUpdate() != 1) {
                     throw new DatabaseException("Insert failed: could not insert person.");
                 }
@@ -245,8 +238,7 @@ public class PersonDAO {
         } catch (SQLException e) {
             System.out.println("Issue removing person");
             throw new DatabaseException();
-        }
-        finally {
+        } finally {
             closeConnection(true);
             System.out.println("Person.remove closed connection");
         }
@@ -271,10 +263,10 @@ public class PersonDAO {
             System.out.println("Person.removePeople opened connection");
             PreparedStatement stmt = conn.prepareStatement(sql);
             stmt.executeUpdate();
+            stmt.close();
         } catch (SQLException e) {
             System.out.println(e.toString());
-        }
-        finally {
+        } finally {
             closeConnection(true);
             System.out.println("Person.removePeople closed connection");
         }
@@ -294,14 +286,13 @@ public class PersonDAO {
             System.out.println("Person.clear opened connection");
             stmt = conn.createStatement();
             stmt.executeUpdate(sql);
+            stmt.close();
 
         } catch (SQLException e) {
             System.out.println(e.toString());
-        }
-        catch (NullPointerException e) {
+        } catch (NullPointerException e) {
 
-        }
-        finally {
+        } finally {
             closeConnection(true);
             System.out.println("Person.clear closed connection");
 
@@ -311,8 +302,6 @@ public class PersonDAO {
 
     public User getUser(String personID) {
         User returnUser = new User();
-        //get username
-        //get corresponding user
 
         String sql = "SELECT * FROM Persons WHERE PersonID = '" + personID + "'";
         ArrayList<String> userList = new ArrayList<>();
@@ -335,13 +324,13 @@ public class PersonDAO {
             }
             UserDAO userDAO = new UserDAO();
             returnUser = userDAO.getUser(userList.get(0));
-        }
-        catch (SQLException e) {
+        } catch (SQLException e) {
 
         }
 
         return returnUser;
     }
+
     public boolean tableExists() {
         boolean tExists = false;
         String tableName = "Persons";
@@ -354,11 +343,9 @@ public class PersonDAO {
                     tExists = true;
                 }
             }
-        }
-        catch (SQLException e) {
+        } catch (SQLException e) {
             System.out.println(e.toString());
-        }
-        finally {
+        } finally {
             closeConnection(true);
             System.out.println("Person.tableExists closed connection");
         }
@@ -368,12 +355,10 @@ public class PersonDAO {
     public boolean addParents(String momID, String dadID, String personID) throws DatabaseException {
         String sql = "update Persons set Mother = '" + momID + "', Father = '" + dadID +
                 "' where PersonID = '" + personID + "';";
+
         if (momID == null || momID.equals("") || dadID == null || dadID.equals("")) {
             throw new DatabaseException("No parent ID's");
         }
-        Person testMom = getPerson(momID);
-        Person testDad = getPerson(dadID);
-        Person testKid = getPerson(personID);
 
         try {
             if (!tableExists()) createTables();
@@ -381,11 +366,11 @@ public class PersonDAO {
             System.out.println("Person.addParents opened connection");
             PreparedStatement stmt = conn.prepareStatement(sql);
             stmt.executeUpdate();
+            stmt.close();
         } catch (Exception e) {
             System.out.println(e.toString());
             throw new DatabaseException();
-        }
-        finally {
+        } finally {
             closeConnection(true);
             System.out.println("Person.addParents closed connection");
         }
@@ -396,19 +381,17 @@ public class PersonDAO {
         String sql = "update Persons set Spouse = '" + spouseID + "' where PersonID = '" + personID + "';";
         if (spouseID == null || spouseID.equals("") || personID == null || personID.equals(""))
             throw new DatabaseException("Empty field");
-        getPerson(spouseID);
-        getPerson(personID);
         try {
             if (!tableExists()) createTables();
             openConnection();
             System.out.println("Person.addSpouse opened connection");
             PreparedStatement stmt = conn.prepareStatement(sql);
             stmt.executeUpdate();
+            stmt.close();
         } catch (Exception e) {
             System.out.println(e.toString());
             throw new DatabaseException();
-        }
-        finally {
+        } finally {
             closeConnection(true);
             System.out.println("Person.addSpouse closed connection");
         }
@@ -435,11 +418,11 @@ public class PersonDAO {
                 person.mother = rs.getString("Mother");
                 person.spouse = rs.getString("Spouse");
             }
-            if(person.personID == null) return false;
+            st.close();
+            if (person.personID == null) return false;
         } catch (SQLException e) {
             System.out.println(e.toString());
-        }
-        finally {
+        } finally {
             closeConnection(true);
             System.out.println("Person.existsInPersons closed connection");
         }

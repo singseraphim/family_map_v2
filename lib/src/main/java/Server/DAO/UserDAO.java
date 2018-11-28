@@ -52,8 +52,7 @@ public class UserDAO {
             conn = null;
         } catch (SQLException e) {
             System.out.println(e.toString());
-        }
-        catch (NullPointerException e) {
+        } catch (NullPointerException e) {
 
         }
     }
@@ -81,7 +80,7 @@ public class UserDAO {
                 if (stmt != null) {
                     stmt.close();
                     stmt = null;
-                                    }
+                }
                 closeConnection(true);
                 System.out.println("User.createTables closed connection");
             }
@@ -98,18 +97,12 @@ public class UserDAO {
      * @return a bool that indicates whether the insert operation was successful
      */
     public boolean insert(User user) throws DatabaseException {
-        
-        if (user.firstName == null || user.lastName == null || user.email == null || user.password == null
-                || user.userName == null || user.personID == null || user.gender == null ||  user.firstName.equals("")
-                || user.lastName.equals("") || user.email.equals("") || user.password.equals("")
-                || user.userName.equals("") || user.personID.equals("") || user.gender.equals(""))
-            throw new DatabaseException("Empty field");
 
         if (!user.gender.equals("f") && !user.gender.equals("m"))
             throw new DatabaseException("This project does not support the gender spectrum");
 
         try {
-            if(!tableExists()) createTables();
+            if (!tableExists()) createTables();
             openConnection();
             System.out.println("User.insert opened connection");
 
@@ -158,7 +151,7 @@ public class UserDAO {
         User userObj = new User();
         String sql = "SELECT * FROM Users WHERE Username = '" + userName + "'";
         try {
-            if(!tableExists()) createTables();
+            if (!tableExists()) createTables();
             openConnection();
             System.out.println("User.getUser opened connection");
 
@@ -175,12 +168,10 @@ public class UserDAO {
                 userObj.personID = rs.getString("PersonID");
             }
             st.close();
-        }
-        catch (SQLException e) {
+        } catch (SQLException e) {
             System.out.println(e.toString());
 
-        }
-        finally {
+        } finally {
             closeConnection(true);
             System.out.println("User.getUser closed connection");
 
@@ -202,11 +193,10 @@ public class UserDAO {
 
             stmt = conn.createStatement();
             stmt.executeUpdate(sql);
-        }
-        catch (SQLException e) {
+            stmt.close();
+        } catch (SQLException e) {
             System.out.println(e.toString());
-        }
-        finally {
+        } finally {
             closeConnection(true);
             System.out.println("User.clear closed connection");
 
@@ -228,12 +218,10 @@ public class UserDAO {
                     tExists = true;
                 }
             }
-        }
-        catch (SQLException e) {
+        } catch (SQLException e) {
             System.out.println(e.toString());
 
-        }
-        finally {
+        } finally {
             closeConnection(true);
             System.out.println("User.tableExists closed connection");
         }
@@ -256,14 +244,12 @@ public class UserDAO {
 
         } catch (SQLException e) {
             System.out.println(e.toString());
-        }
-        finally {
+        } finally {
             closeConnection(true);
             System.out.println("User.remove closed connection");
 
         }
 
     }
-
 
 }

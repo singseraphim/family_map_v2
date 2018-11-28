@@ -12,17 +12,13 @@ import java.io.InputStreamReader;
 import Server.Services.Register.Register;
 import Server.Services.Register.RegisterRequest;
 import Server.Services.Register.RegisterResponse;
-import jdk.nashorn.api.scripting.JSObject;
 
-import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
-import java.lang.Object;
 
 public class RegisterHandler  implements HttpHandler {
     @Override
     public void handle(HttpExchange exchange) throws IOException {
-        boolean success = false;
         try {
             if (exchange.getRequestMethod().toLowerCase().equals("post")) {
                 //get input data
@@ -48,7 +44,6 @@ public class RegisterHandler  implements HttpHandler {
         }
         catch (IOException e) {
             e.printStackTrace();
-            success = false;
         }
 
     }

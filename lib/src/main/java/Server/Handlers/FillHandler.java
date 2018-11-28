@@ -14,7 +14,7 @@ import Server.Services.Fill.FillResponse;
 public class FillHandler  implements HttpHandler {
     @Override
     public void handle(HttpExchange exchange) throws IOException {
-        //get data from exchange somehow
+        //get data from exchange
 
         String path = exchange.getRequestURI().getPath();
         path = path.substring(1);

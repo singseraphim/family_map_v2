@@ -55,6 +55,8 @@ public class Fill {
     public FillResponse fill(String username, int generations) {
         FillResponse response = new FillResponse();
         UserDAO userDAO = new UserDAO();
+
+        //Checking for valid data
         if (username == null || username.equals("")) {
             response.message = "Empty username field";
             response.success = false;
@@ -68,6 +70,13 @@ public class Fill {
             response.success = false;
             return response;
         }
+        if (generations < 0) {
+            response.message = "Invalid number of generations";
+            response.success = false;
+            return response;
+        }
+
+        //Removing all data, reinserting the user
         try {
             personDAO.removePeople(username);
             eventDAO.removeEvents(username);
@@ -78,19 +87,16 @@ public class Fill {
             response.success = false;
             return response;
         }
-        if (generations < 0) {
-            response.message = "Invalid number of generations";
-            response.success = false;
-            return response;
-        } //move this higher
 
 
+        //Reading data from json files
         Gson gson = new Gson();
         String mNamesJson = readFile("lib/src/Resources/mnames.json");
         String fNamesJson = readFile("lib/src/Resources/fnames.json");
         String locationsJson = readFile("lib/src/Resources/locations.json");
         String sNamesJson = readFile("lib/src/Resources/snames.json");
 
+        //Adding data to classes that hold the given data
         try {
             maleNames = gson.fromJson(mNamesJson, MaleNames.class);
             femaleNames = gson.fromJson(fNamesJson, FemaleNames.class);
@@ -101,14 +107,18 @@ public class Fill {
         catch(Exception e) {
             System.out.println(e.toString());
         }
+
+        //Adds a birth event for the user- needed for the fill algorithm because event dates
+        //are determined relative to the birth date of their children.
         addBirth(userPerson, 2018);
-        //note: this increments numEvents by one. Decrement if you need to hide the birth event.
 
 
-
+        //adding the base user to the current generation
         finalGenNum = generations;
         currentGenNum = 0;
         currentGen.add(userPerson);
+
+        //calling recursive function
         addGeneration();
         response.message = "Successfully added " + numPeopleAdded + " persons" +
                 " and " + numEventsAdded + " events to the database.\n";
@@ -116,6 +126,7 @@ public class Fill {
         return response;
     }
 
+    //recursive function that creates parents, gives them the correct events and adds them to the next generation
     boolean addGeneration() {
         if (currentGenNum == finalGenNum) {
             return true;
@@ -142,11 +153,12 @@ public class Fill {
         return true;
     }
 
+    //creates person object for mother, adds relevant data, generates events and adds mother to table
     Person makeMom(Person child) {
         Person mom = new Person();
         mom.firstName = getRandomFemaleName();
         mom.lastName = getRandomSurname();
-        mom.descendant = currentUsername; //setting to null randomly why
+        mom.descendant = currentUsername;
         mom.personID = UUID.randomUUID().toString();
         mom.gender = "f";
         addBirth(mom, child.getBirth());
@@ -161,6 +173,7 @@ public class Fill {
         return mom;
     }
 
+    //creates person object for father, adds relevant data, generates events and adds father to table
     Person makeDad(Person child) {
         Person dad = new Person();
         dad.firstName = getRandomMaleName();
@@ -179,6 +192,8 @@ public class Fill {
         }
         return dad;
     }
+
+    //generates birth event for given user based on the birth date of their child
     void addBirth(Person person, int childBirth) {
         Event birth = new Event();
         int birthYear = childBirth - ThreadLocalRandom.current().nextInt(18,  35);
@@ -203,6 +218,7 @@ public class Fill {
         return;
     }
 
+    //generates death event for the given user based on the birth of their child
     void addDeath(Person person, int childBirth) {
         Event death = new Event();
         int deathYear = childBirth + ThreadLocalRandom.current().nextInt(1,  70);
@@ -226,6 +242,8 @@ public class Fill {
         }
         return;
     }
+
+    //generates marriage events based on the birth date of the child
     void marry(Person lovelyBride, Person dashingGroom, Person child) {
         Event brideMarriage = new Event();
         Event groomMarriage = new Event();
@@ -277,6 +295,7 @@ public class Fill {
     }
 
     String getRandomSurname() {
+        if (surnames == null) return "Grimaldis";
         int rnd = new Random().nextInt(surnames.data.length);
         return surnames.data[rnd];
     }
@@ -285,11 +304,6 @@ public class Fill {
         int rnd = new Random().nextInt(locations.data.length);
         return locations.data[rnd];
     }
-
-
-
-
-
 
     public static String readFile(String fileName) {
         String result = "";
@@ -310,6 +324,3 @@ public class Fill {
 
 
 }
-/*
-handle(HttpExchange exchange)
- */

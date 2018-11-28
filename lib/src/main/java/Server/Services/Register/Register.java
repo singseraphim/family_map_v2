@@ -4,11 +4,9 @@ import java.util.UUID;
 
 import Exceptions.DatabaseException;
 import Server.DAO.AuthDAO;
-import Server.DAO.EventDAO;
 import Server.DAO.PersonDAO;
 import Server.DAO.UserDAO;
 import Server.Model.AuthToken;
-import Server.Model.Event;
 import Server.Model.Person;
 import Server.Model.User;
 import Server.Services.Fill.Fill;
@@ -31,15 +29,10 @@ public class Register {
      *                  or an error message on a failed response.
      */
     public RegisterResponse register(RegisterRequest request) {
-        /*
-        THINGS TO CHECK FOR:
-        username needs to be unique, not blank
-        password needs to be not blank
-        email, not blank
-        names, not blank
-        gender needs to be m or f or nb
-         */
+
         RegisterResponse response = new RegisterResponse();
+
+        //checks for valid data
         if (!uniqueUsername(request.userName)) {
             response.message = "Username taken";
             response.success = false;
@@ -85,18 +78,11 @@ public class Register {
 
         }
 
-        //DO THE LOGGING IN THING
-        /*
-        Insert into users table
-        Insert into persons table
-        Insert into auth table
-        Fill 4 generations
-         */
-
         UserDAO userDAO = new UserDAO();
         PersonDAO personDAO = new PersonDAO();
         AuthDAO authDAO = new AuthDAO();
 
+        //creates new objects and sets relevant data
         User newUser = new User();
         newUser.lastName = request.lastName;
         newUser.firstName = request.firstName;
@@ -118,6 +104,7 @@ public class Register {
         newToken.authToken = UUID.randomUUID().toString();
 
 
+        //inserts data
         try {
             userDAO.insert(newUser);
             personDAO.insert(newPerson);
@@ -131,6 +118,7 @@ public class Register {
 
         }
 
+        //calls fill method to generate data for user
         Fill fillService = new Fill();
         FillResponse fillResponse = fillService.fill(newUser.userName, 4);
         if (fillResponse.success == false) {
@@ -139,6 +127,7 @@ public class Register {
             return response;
         }
 
+        //adds new auth token to table for login
         response.authToken = newToken.authToken;
         response.personID = newPerson.personID;
         response.userName = request.userName;
@@ -146,6 +135,7 @@ public class Register {
         return response;
     }
 
+    //checks for a unique username
     public boolean uniqueUsername(String attemptedName) {
         UserDAO userDAO = new UserDAO();
         User currentUser = new User();

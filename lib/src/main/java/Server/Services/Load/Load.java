@@ -27,19 +27,26 @@ public class Load {
 
     public LoadResponse load (LoadRequest request) {
         LoadResponse response = new LoadResponse();
+
+        //clears all data
         try {
             authDAO.clear();
             eventDAO.clear();
             personDAO.clear();
             userDAO.clear();
 
+            //adds given data to respective tables
             for (User user : request.users) {
+                System.out.println("Adding " + user.firstName);
                 userDAO.insert(user);
             }
             for (Event event : request.events) {
+                System.out.println("Adding " + event.eventType);
                 eventDAO.insert(event);
             }
-            for (Person person : request.people) {
+            for (Person person : request.persons) {
+                System.out.println("Adding " + person.firstName);
+
                 personDAO.insert(person);
             }
 
@@ -48,7 +55,7 @@ public class Load {
             System.out.println(e.toString());
             response.message = "Error loading: " + e.toString();
             response.success = false;
-            authDAO.clear(); //clearing all data if there's an error. Optional.
+            authDAO.clear(); //clears all data if there's an error
             eventDAO.clear();
             personDAO.clear();
             userDAO.clear();
@@ -56,7 +63,7 @@ public class Load {
 
         }
         response.message = "Successfully added " + request.users.size() + " users, " +
-                request.people.size() + " persons, and " + request.events.size() +
+                request.persons.size() + " persons, and " + request.events.size() +
                 " events to the database.";
         response.success = true;
         return response;

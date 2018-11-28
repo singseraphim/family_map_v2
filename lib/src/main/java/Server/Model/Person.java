@@ -74,8 +74,7 @@ public class Person {
 
         try {
             personDAO.addParents(mom.personID, dad.personID, personID);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
 
         }
     }
@@ -86,14 +85,10 @@ public class Person {
 
         try {
             personDAO.addSpouse(spouse.personID, personID);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
 
         }
     }
-
-
-
 
 
 }

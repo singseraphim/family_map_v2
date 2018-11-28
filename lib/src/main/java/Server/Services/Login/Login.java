@@ -26,12 +26,8 @@ public class Login {
      * or an authToken, username and personID on a successful login.
      */
     public LoginResponse login (LoginRequest request) { //check if already logged in
-        /*
-        THINGS TO CHECK:
-        Does the username exist?
-        Does the password match the username?
-        Is the user already logged in?
-         */
+
+        //checks for valid data
         LoginResponse response = new LoginResponse();
         if (!validUsername(request.userName)) {
             response.message = "Invalid username.";
@@ -44,6 +40,8 @@ public class Login {
             return response;
         }
         AuthDAO authDAO = new AuthDAO();
+
+        //if the user is already logged in, delete old token and generate new one
         if (loggedIn(request.userName)) {
             AuthToken currentUser = authDAO.get(request.userName);
             try {
@@ -54,7 +52,7 @@ public class Login {
                 response.success = false;
                 return response;
             }
-        } //fix unit test- changed to allow multiple logins
+        }
 
         AuthToken newToken = new AuthToken();
         newToken.userName = request.userName;
@@ -66,7 +64,7 @@ public class Login {
             System.out.println(e.toString());
         }
 
-        //put things in response
+        //put relevant data in response
         response.authToken = newToken.authToken;
         response.userName = newToken.userName;
         UserDAO userDAO = new UserDAO();

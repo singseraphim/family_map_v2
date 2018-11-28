@@ -10,7 +10,7 @@ import Server.Model.*;
  */
 public class LoadRequest {
     public ArrayList<User> users = new ArrayList<>();
-    public ArrayList<Person> people = new ArrayList<>();
+    public ArrayList<Person> persons = new ArrayList<>();
     public ArrayList<Event> events = new ArrayList<>();
 
 

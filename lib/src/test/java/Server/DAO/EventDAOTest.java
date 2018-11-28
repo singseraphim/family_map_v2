@@ -133,35 +133,6 @@ public class EventDAOTest {
     }
 
     @Test(expected = DatabaseException.class)
-    public void insertNoDescendant() throws DatabaseException {
-        Event event = new Event();
-        event.person = "personID";
-        event.eventID = "eventID";
-
-        eventDAO.insert(event);
-    }
-
-    @Test(expected = DatabaseException.class)
-    public void insertNoID() throws DatabaseException {
-        Event event = new Event();
-
-        event.descendant = "descendant";
-        event.person = "personID";
-        eventDAO.insert(event);
-
-    }
-
-    @Test(expected = DatabaseException.class)
-    public void insertNoPerson() throws DatabaseException {
-        Event event = new Event();
-
-        event.descendant = "descendant";
-        event.eventID = "eventID";
-        eventDAO.insert(event);
-
-    }
-
-    @Test(expected = DatabaseException.class)
     public void insertExtantID() throws DatabaseException {
         Event event = new Event();
         event.eventID = "eventID";

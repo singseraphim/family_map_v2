@@ -23,13 +23,15 @@ public class Event {
         EventsResponse response = new EventsResponse();
         AuthDAO authDAO = new AuthDAO();
         try {
-            eventDAO.createTables();
+            //checks for valid token
             User currentUser = authDAO.getUser(authToken);
-            if (currentUser == null) {
-                response.message = "Authtoken doesn't exist";
+            if (currentUser.personID == null) {
+                response.message = "Auth token does not exist";
                 response.success = false;
                 return response;
             }
+
+            //calls getEvents, gets event data
             response.data = eventDAO.getEvents(currentUser.userName);
             response.success = true;
             return response;
@@ -52,6 +54,7 @@ public class Event {
     public EventResponse getEvent(String eventID, String authToken) {
         EventResponse response = new EventResponse();
         eventDAO.createTables();
+        //checks for valid eventID and authtoken
         if (validToken(eventID, authToken)) {
             Server.Model.Event event = eventDAO.getEvent(eventID);
             response.eventID = event.eventID;
@@ -60,12 +63,12 @@ public class Event {
             response.longitude = event.longitude;
             response.country = event.country;
             response.city = event.city;
-            response.eventType = event.city;
+            response.eventType = event.eventType;
             response.year = event.year;
             response.success = true;
             return response;
         }
-        response.message = "Invalid token";
+        response.message = "Event ID or authorization token are invalid.";
         return response;
     }
 
@@ -77,15 +80,15 @@ public class Event {
      * @return true if the eventID and authToken are valid and the users they are both associated with match.
      */
     public boolean validToken(String eventID, String authToken) {
-        //get user from authtoken: make sure authtoken is valid
-        //get user from eventID: make sure eventID is valid
+        //get user from authtoken, make sure authtoken is valid
+        //get user from eventID, make sure eventID is valid
         //compare the users, if identical then true.
         User currentUser = getAuthUser(authToken);
-        if (currentUser == null) { //authToken doesn't exist
+        if (currentUser == null) { // if authToken doesn't exist
             return false;
         }
         User eventDescendant = getEventUser(eventID);
-        if (eventDescendant == null) { //eventID is invalid
+        if (eventDescendant == null) { // if eventID is invalid
             return false;
         }
         if (eventDescendant.equals(currentUser)) { //if the current user matches the descendant of the event

@@ -1,6 +1,5 @@
 package Server.Services.Clear;
 import Server.DAO.*;
-import Exceptions.DatabaseException;
 
 /**
  * Deletes all data from database.
