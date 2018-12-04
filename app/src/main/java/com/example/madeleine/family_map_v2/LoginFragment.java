@@ -1,13 +1,12 @@
 package com.example.madeleine.family_map_v2;
 
-import android.content.Intent;
+import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
-import android.view.SearchEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -32,11 +31,28 @@ public class LoginFragment extends Fragment {
     private static Button loginButton;
     private static Button registerButton;
     boolean checkedGender = false;
+    private OnLoginFragmentInteractionListener mListener;
 
 
 
     public LoginFragment() {
         // Required empty public constructor
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof OnLoginFragmentInteractionListener) {
+            mListener = (OnLoginFragmentInteractionListener) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement OnFragmentInteractionListener");
+        }
+    }
+
+    public interface OnLoginFragmentInteractionListener {
+        // TODO: Update argument type and name
+        void loadMap();
     }
 
     @Override
@@ -211,8 +227,7 @@ public class LoginFragment extends Fragment {
                 lastName, Toast.LENGTH_SHORT).show();
 
                 session.loggedIn = true;
-                Intent intent = new Intent(LoginFragment.this.getActivity(), MainActivity.class);
-                startActivity(intent);
+                mListener.loadMap();
 
             }
             else {
@@ -234,8 +249,7 @@ public class LoginFragment extends Fragment {
                 Toast.makeText(getActivity(), "Register success! Welcome, " + firstName + " " +
                         lastName, Toast.LENGTH_SHORT).show();
                 session.loggedIn = true;
-                Intent intent = new Intent(LoginFragment.this.getActivity(), MainActivity.class);
-                startActivity(intent);
+                mListener.loadMap();
             }
 
             else {

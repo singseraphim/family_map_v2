@@ -19,8 +19,6 @@ import com.example.madeleine.family_map_v2.Model.CurrentSession;
 import com.example.madeleine.family_map_v2.Model.ListEntry;
 
 public class FilterActivity extends AppCompatActivity {
-    private static Button backButton;
-
     private CurrentSession session = CurrentSession.getInstance();
     private ListEntry[] filterOptions = new ListEntry[session.filters.size()];
     private RecyclerView recyclerView;
@@ -33,15 +31,7 @@ public class FilterActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle(null);
-
-        backButton = findViewById(R.id.up_button);
-        backButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(FilterActivity.this, MainActivity.class);
-                startActivity(intent);
-            }
-        });
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         setFilterOptions();
 

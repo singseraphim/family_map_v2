@@ -17,13 +17,6 @@
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
             app:popupTheme="@style/AppTheme.PopupOverlay">
-            <Button
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:id = "@+id/up_button"
-                android:background="@drawable/ic_arrow_back_black_24dp"
-                android:gravity="right"
-                android:layout_marginHorizontal="20dp"/>
             <TextView
                 android:id="@+id/toolbar_title"
                 style="@style/TextAppearance.AppCompat.Widget.ActionBar.Title"

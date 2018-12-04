@@ -27,7 +27,6 @@ import java.util.ArrayList;
 
 public class SearchActivity extends AppCompatActivity {
 
-    private static Button backButton;
     private RecyclerView resultsRecyclerView;
     private Adapter adapter;
     private CurrentSession session = CurrentSession.getInstance();
@@ -40,14 +39,7 @@ public class SearchActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle(null);
-        backButton = findViewById(R.id.up_button);
-        backButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(SearchActivity.this, MainActivity.class);
-                startActivity(intent);
-            }
-        });
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         resultsRecyclerView = SearchActivity.this.findViewById(R.id.results_recycler_view);
         resultsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         searchField = findViewById(R.id.search_field);

@@ -83,9 +83,9 @@ public class PersonActivity extends AppCompatActivity {
             textView.setText(group.name);
         }
 
-        /*public void onClick(View view) {
+        public void onClick(View view) {
             //expand thing
-        }*/
+        }
 
         @Override
         public boolean shouldItemViewClickToggleExpansion() {
@@ -192,6 +192,8 @@ public class PersonActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle(null);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
 
         Bundle extras = getIntent().getExtras();
         String personID = extras.getString("personID");

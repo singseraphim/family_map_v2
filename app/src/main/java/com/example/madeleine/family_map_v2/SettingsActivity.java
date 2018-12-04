@@ -2,6 +2,7 @@ package com.example.madeleine.family_map_v2;
 
 import android.content.Intent;
 import android.content.res.Resources;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -23,7 +24,6 @@ import org.w3c.dom.Text;
 import java.util.ArrayList;
 
 public class SettingsActivity extends AppCompatActivity {
-    private static Button backButton;
     CurrentSession session = CurrentSession.getInstance();
     private static Spinner lifeStorySpinner;
     private static Spinner familyTreeSpinner;
@@ -47,22 +47,14 @@ public class SettingsActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle(null);
-
-        backButton = findViewById(R.id.up_button);
-        backButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(SettingsActivity.this,MainActivity.class);
-                startActivity(intent);
-            }
-        });
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         lifeStorySwitch = findViewById(R.id.life_lines_switch);
         familyTreeSwitch = findViewById(R.id.family_tree_lines_switch);
         spouseSwitch = findViewById(R.id.spouse_lines_switch);
-        lifeStorySwitch.setChecked(true);
-        familyTreeSwitch.setChecked(true);
-        spouseSwitch.setChecked(true);
+        lifeStorySwitch.setChecked(session.lifeStoryLines);
+        familyTreeSwitch.setChecked(session.familyTreeLines);
+        spouseSwitch.setChecked(session.spouseLines);
 
         lifeStorySpinner = findViewById(R.id.life_lines_spinner);
         familyTreeSpinner = findViewById(R.id.family_tree_lines_spinner);
@@ -81,21 +73,14 @@ public class SettingsActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 session.logout();
-                Intent intent = new Intent(SettingsActivity.this, MainActivity.class);
-                startActivity(intent);
+                finish();
             }
         });
 
         syncDataTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (session.syncServerData()) {
-                Intent intent = new Intent(SettingsActivity.this, MainActivity.class);
-                    startActivity(intent);
-                }
-                else {
-                    Toast.makeText(SettingsActivity.this, "Error syncing data, please try again.", Toast.LENGTH_LONG).show();
-                }
+                new SyncDataAsync().execute();
             }
         });
 
@@ -174,6 +159,21 @@ public class SettingsActivity extends AppCompatActivity {
 
 
 
+    }
+
+    private class SyncDataAsync extends AsyncTask <String, Void, Integer>{
+        protected Integer doInBackground(String...params) { //feeds array params
+            if (session.syncServerData()) return 1;
+            return 0;
+        }
+        protected void onPostExecute(Integer success) {
+            if (success == 1) {
+                finish();
+            }
+            else {
+                Toast.makeText(SettingsActivity.this, "Error syncing data, please try again.", Toast.LENGTH_LONG).show();
+            }
+        }
     }
 
 }

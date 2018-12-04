@@ -52,6 +52,25 @@ public class CurrentSession {
 
     }
 
+    private void jitterCoordinates() {
+        for (Event a : eventList) {
+            for (Event b : eventList) {
+                if (a.latitude == b.latitude && a.longitude == b.longitude) {
+                    b.latitude += .0001;
+                }
+            }
+        }
+    }
+
+    public Event getEventByCoordinates(double latitude, double longitude) {
+        for (Event event : eventList) {
+            if (event.latitude == latitude && event.longitude == longitude) {
+                return event;
+            }
+        }
+        return null;
+    }
+
     public ArrayList<Person> searchPersons(String input) {
         ArrayList<Person> returnList = new ArrayList<>();
         for (Person person : filteredPersonList) {
@@ -240,6 +259,7 @@ public class CurrentSession {
             }
         }
         setFilterOptions();
+        jitterCoordinates();
         return response;
     }
     public RegisterResponse register(RegisterRequest request) {
@@ -259,6 +279,7 @@ public class CurrentSession {
             }
         }
         setFilterOptions();
+        jitterCoordinates();
         return response;
     }
     public void logout() {
